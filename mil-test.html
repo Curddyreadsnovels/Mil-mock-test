@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MIL Practice Test — 60 Items</title>
+<style>
+  :root{
+    --paper:#faf9f4;
+    --rule:#d8d3c4;
+    --ink:#1f2a44;
+    --ink-soft:#5b6478;
+    --red:#b3312c;
+    --red-soft:#e7c9c6;
+    --green:#2f6d4f;
+    --green-soft:#cfe3d6;
+    --amber:#c98a2c;
+    --card:#ffffff;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Iowan Old Style','Georgia',serif;
+    background:
+      repeating-linear-gradient(var(--paper) 0 31px, var(--rule) 31px 32px);
+    background-color:var(--paper);
+    color:var(--ink);
+    padding-bottom:120px;
+  }
+  header{
+    background:var(--ink);
+    color:var(--paper);
+    padding:28px 20px 22px;
+    text-align:center;
+    position:relative;
+  }
+  header .eyebrow{
+    font-family:'Courier New',monospace;
+    letter-spacing:.18em;
+    font-size:11px;
+    text-transform:uppercase;
+    color:#b9c2d9;
+    margin-bottom:8px;
+  }
+  header h1{
+    margin:0 0 6px;
+    font-size:clamp(22px,5vw,32px);
+    font-weight:700;
+    letter-spacing:.01em;
+  }
+  header p{
+    margin:0;
+    font-family:'Courier New',monospace;
+    font-size:12px;
+    color:#c7cee0;
+  }
+  .progress-wrap{
+    position:sticky;
+    top:0;
+    z-index:20;
+    background:var(--paper);
+    border-bottom:1px solid var(--rule);
+    padding:10px 20px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    font-family:'Courier New',monospace;
+    font-size:12px;
+  }
+  .progress-bar{
+    flex:1;
+    height:6px;
+    background:var(--rule);
+    border-radius:3px;
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    width:0%;
+    background:var(--amber);
+    transition:width .25s ease;
+  }
+  main{
+    max-width:720px;
+    margin:0 auto;
+    padding:24px 18px 20px;
+  }
+  .instructions{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-left:4px solid var(--ink);
+    padding:14px 16px;
+    margin-bottom:26px;
+    font-size:14px;
+    color:var(--ink-soft);
+    line-height:1.5;
+  }
+  .instructions b{color:var(--ink);}
+  .unit-label{
+    font-family:'Courier New',monospace;
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--amber);
+    margin:30px 0 10px;
+    padding-bottom:6px;
+    border-bottom:1px dashed var(--rule);
+  }
+  .q{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:3px;
+    padding:16px 16px 14px;
+    margin-bottom:14px;
+    position:relative;
+  }
+  .q-num{
+    font-family:'Courier New',monospace;
+    font-weight:700;
+    color:var(--ink-soft);
+    font-size:12px;
+    margin-bottom:6px;
+  }
+  .q-text{
+    font-size:16px;
+    line-height:1.45;
+    margin-bottom:12px;
+    font-weight:600;
+  }
+  .choices{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .choice{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    padding:8px 10px;
+    border:1px solid var(--rule);
+    border-radius:3px;
+    cursor:pointer;
+    font-size:14.5px;
+    transition:background .15s, border-color .15s;
+  }
+  .choice:hover{background:#f4f2ea;}
+  .choice input{margin-top:3px;accent-color:var(--ink);}
+  .choice .letter{
+    font-family:'Courier New',monospace;
+    font-weight:700;
+    color:var(--ink-soft);
+    min-width:16px;
+  }
+  .choice.selected{
+    border-color:var(--ink);
+    background:#eef0f6;
+  }
+  /* graded states */
+  .q.correct{border-color:var(--green);background:#fbfffc;}
+  .q.incorrect{border-color:var(--red);background:#fffaf9;}
+  .choice.mark-correct{
+    border-color:var(--green);
+    background:var(--green-soft);
+  }
+  .choice.mark-incorrect{
+    border-color:var(--red);
+    background:var(--red-soft);
+  }
+  .grade-tag{
+    position:absolute;
+    top:12px;
+    right:14px;
+    font-family:'Courier New',monospace;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.06em;
+    padding:2px 8px;
+    border-radius:10px;
+  }
+  .grade-tag.correct{background:var(--green);color:#fff;}
+  .grade-tag.incorrect{background:var(--red);color:#fff;}
+  .choices input, .choices .choice{pointer-events:auto;}
+  .locked .choice{cursor:default;}
+  .locked .choice:hover{background:inherit;}
+
+  footer.bar{
+    position:fixed;
+    bottom:0;
+    left:0;
+    right:0;
+    background:var(--ink);
+    color:var(--paper);
+    padding:12px 18px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    z-index:30;
+  }
+  footer.bar .count{
+    font-family:'Courier New',monospace;
+    font-size:12px;
+    color:#c7cee0;
+  }
+  .btn{
+    font-family:'Courier New',monospace;
+    font-weight:700;
+    font-size:13px;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    padding:11px 20px;
+    border-radius:3px;
+    border:none;
+    cursor:pointer;
+  }
+  .btn-finish{background:var(--red);color:#fff;}
+  .btn-finish:disabled{background:#5b6478;cursor:not-allowed;opacity:.6;}
+  .btn-retake{background:var(--amber);color:#1f1200;}
+
+  /* Score stamp */
+  .stamp{
+    display:none;
+    position:sticky;
+    top:52px;
+    z-index:15;
+    max-width:720px;
+    margin:18px auto 0;
+    padding:0 18px;
+  }
+  .stamp.show{display:block;}
+  .stamp-card{
+    background:var(--card);
+    border:2px solid var(--ink);
+    border-radius:4px;
+    padding:20px;
+    text-align:center;
+    box-shadow:3px 3px 0 var(--rule);
+  }
+  .stamp-score{
+    font-size:44px;
+    font-weight:800;
+    color:var(--red);
+    font-family:'Courier New',monospace;
+    line-height:1;
+  }
+  .stamp-pct{
+    font-size:14px;
+    color:var(--ink-soft);
+    margin-top:6px;
+  }
+  .stamp-remark{
+    margin-top:10px;
+    font-style:italic;
+    color:var(--ink);
+    font-size:14px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">First Quarter &middot; Media and Information Literacy</div>
+  <h1>MIL Practice Test</h1>
+  <p>60 items &middot; multiple choice &middot; answers reveal only after you finish</p>
+</header>
+
+<div class="progress-wrap">
+  <span id="progressText">0 / 60 answered</span>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+</div>
+
+<div class="stamp" id="stamp">
+  <div class="stamp-card">
+    <div class="stamp-score" id="stampScore">0 / 60</div>
+    <div class="stamp-pct" id="stampPct"></div>
+    <div class="stamp-remark" id="stampRemark"></div>
+  </div>
+</div>
+
+<main>
+  <div class="instructions">
+    <b>Instructions:</b> Choose the best answer for each item. You can change your answer any time before submitting.
+    Correct and incorrect marks, and the right answers, only appear after you press <b>Finish Test</b> below.
+  </div>
+  <div id="quiz"></div>
+</main>
+
+<footer class="bar">
+  <span class="count" id="footerCount">0 of 60 answered</span>
+  <div>
+    <button class="btn btn-finish" id="finishBtn">Finish Test</button>
+    <button class="btn btn-retake" id="retakeBtn" style="display:none;">Retake Test</button>
+  </div>
+</footer>
+
+<script>
+const DATA = [
+  {u:"Unit I · Lesson 1.1 — Communication Process & Models", q:"What does communication refer to?", c:["The process of storing data","The process of exchanging information, ideas, thoughts, or feelings between people","The process of broadcasting entertainment","The process of designing media content"], a:1},
+  {q:"Which element of communication carries the message from sender to receiver?", c:["Feedback","Noise","Channel/Medium","Context"], a:2},
+  {q:"Which model states that a message needs to be deconstructed due to greater noise?", c:["Schramm's Model","Osgood's Circular Model","Shannon-Weaver Model","Aristotle's Model"], a:2},
+  {q:"Which model emphasizes shared experience and understanding between sender and receiver?", c:["Shannon-Weaver Model","Schramm's Model","Osgood's Circular Model","Linear Model"], a:1},
+
+  {u:"Unit I · Lesson 1.2 — What is Media and Information Literacy", q:"Literacy refers to:", c:["The ability to search and evaluate information","The ability to read and write, and understand basic knowledge","The ability to operate digital devices","The ability to produce media content"], a:1},
+  {q:"Information literacy is the capability to:", c:["Identify media institutions' roles","Search, create, and utilize information for a purpose","Operate technology responsibly","Broadcast information publicly"], a:1},
+  {q:"Media literacy is the ability to:", c:["Identify the functions and responsibilities of media institutions","Write computer code","Search for information online","Repair digital devices"], a:0},
+  {q:"Media and Information Literacy (MIL) refers to:", c:["Skills to use information resources effectively and ethically","Skills to only consume media","Skills to build websites","Skills to memorize the news"], a:0},
+
+  {u:"Unit I · Lesson 1.3 — Issues and Challenges in Media", q:"Using someone else's work or ideas without giving credit is called:", c:["Cyberbullying","Plagiarism","Propaganda","Bandwagon"], a:1},
+  {q:"Presenting only part of the facts to create a misleading impression is:", c:["Glittering generalities","Appeal to authority","Half-truth/card-stacking","Bandwagon"], a:2},
+  {q:"A propaganda technique that uses vague, emotionally appealing words without real evidence is:", c:["Glittering generalities","Half-truth","Stereotyping","Cyberbullying"], a:0},
+  {q:"Persuading people to do something because \u201ceveryone else is doing it\u201d is:", c:["Appeal to authority","Bandwagon","Card-stacking","Plagiarism"], a:1},
+  {q:"Citing an expert or authority figure to support a claim, even without solid evidence, is called:", c:["Appeal to authority","Glittering generalities","Bandwagon","Stereotyping"], a:0},
+  {q:"Repeated harassment or intimidation carried out through digital platforms is called:", c:["Cyberbullying","Plagiarism","Unverified sourcing","Card-stacking"], a:0},
+  {q:"Oversimplified generalizations based on gender or race are examples of:", c:["Propaganda","Stereotypes","Bandwagon","Fake news"], a:1},
+  {q:"Information taken from sources that cannot be confirmed or checked is called:", c:["Verified data","Peer-reviewed data","Unverified sources","Public record"], a:2},
+  {q:"Failing to respect a person's personal data, feelings, or belongings online is:", c:["Cyberbullying","Disrespect to privacy, feelings, and property","Plagiarism","Card-stacking"], a:1},
+  {q:"An organized effort to spread biased or misleading information to influence opinion is:", c:["Propaganda","Feedback","Digital citizenship","Media literacy"], a:0},
+  {q:"Claiming someone else's work as your own is an example of:", c:["Media literacy","Intellectual disrespect and dishonesty","Digital citizenship","Information literacy"], a:1},
+  {q:"Which of the following is NOT one of the issues and challenges commonly encountered in media?", c:["Plagiarism","Cyberbullying","Time zone conversion","Propaganda"], a:2},
+
+  {u:"Unit II · Lesson 2.1 — Evolution of Media", q:"Traditional media is best described as a:", c:["Two-way process with instant feedback","One-way process of communication","Process limited to text messages","Process exclusive to smartphones"], a:1},
+  {q:"New media is best described as a:", c:["One-way broadcast only","Print-only format","Two-way process that allows feedback","Format used only before the internet"], a:2},
+  {q:"The earliest form of visual communication used to record daily life and beliefs was:", c:["Papyrus","Cave Paintings","Clay Tablets","Codex"], a:1},
+  {q:"Papyrus, an early form of paper, originated from:", c:["Mesopotamia","Rome","Egypt","China"], a:2},
+  {q:"Clay tablets from Mesopotamia (c. 3500 BCE) were used for writing using:", c:["Hieroglyphics","Cuneiform","Calligraphy","Braille"], a:1},
+  {q:"Dibao, from China around the 2nd century BCE, is considered:", c:["The earliest government newspaper","The first printing press","The first telegraph system","The first telephone directory"], a:0},
+  {q:"Acta Diurna refers to the daily public notices ordered by:", c:["Johannes Gutenberg","Julius Caesar","Tim Berners-Lee","Alexander Graham Bell"], a:1},
+  {q:"The printing press, which allowed mass production of books, was invented in 1440 by:", c:["Samuel Morse","Christopher Sholes","Johannes Gutenberg","Philo Farnsworth"], a:2},
+  {q:"The telegraph, which allowed long-distance communication through Morse Code, was invented by:", c:["Samuel Morse","Alexander Graham Bell","Johannes Gutenberg","Tim Berners-Lee"], a:0},
+  {q:"The telephone, which enabled voice communication across distances, was invented by:", c:["Philo Farnsworth","Alexander Graham Bell","John Bardeen","Kevin Ashton"], a:1},
+  {q:"The World Wide Web, which connected websites globally through hyperlinks, was invented in 1989 by:", c:["Tim Berners-Lee","Kevin Ashton","Johannes Gutenberg","Philo Farnsworth"], a:0},
+  {q:"A newspaper company wants to produce thousands of copies of a newspaper efficiently. Which device should the company use?", c:["Phonograph","Printing press","Telegraph","Typewriter"], a:1},
+
+  {u:"Unit II · Lesson 2.2 — Digital Media in Modern Society", q:"Facebook, Instagram, and TikTok are examples of:", c:["Video Platforms","Social Media","Streaming Services","Educational Platforms"], a:1},
+  {q:"YouTube is an example of a:", c:["Messaging App","Video Platform","Online News site","Streaming Service"], a:1},
+  {q:"Messenger and WhatsApp are examples of:", c:["Messaging Apps","Social Media","Online News","Video Platforms"], a:0},
+  {q:"News that is published and read digitally is classified as:", c:["Streaming Services","Online News","Educational Platforms","Messaging Apps"], a:1},
+  {q:"Platforms that deliver online learning and courses are called:", c:["Streaming Services","Social Media","Educational Platforms","Video Platforms"], a:2},
+  {q:"Netflix and Spotify are examples of:", c:["Streaming Services","Educational Platforms","Online News","Messaging Apps"], a:0},
+  {q:"Social media allowing people to exchange information instantly demonstrates which positive effect?", c:["Promotes Business","Fast Communication","Raises Awareness","Building Communities"], a:1},
+  {q:"Entrepreneurs using social media to advertise and sell products reflects which positive effect?", c:["Supports Education","Promotes Business","Fast Communication","Raises Awareness"], a:1},
+  {q:"Students accessing learning materials online reflects which positive effect of social media?", c:["Supports Education","Building Communities","Promotes Business","Raises Awareness"], a:0},
+  {q:"People connecting with others who share the same interests or goals reflects which positive effect?", c:["Fast Communication","Building Communities","Supports Education","Promotes Business"], a:1},
+  {q:"Social media being used to spread information about causes or issues reflects which positive effect?", c:["Raises Awareness","Fast Communication","Promotes Business","Building Communities"], a:0},
+  {q:"False or misleading information spread online is called:", c:["Screen addiction","Fake news","Online scam","Privacy issue"], a:1},
+  {q:"Repeated online harassment on social media is an example of which negative effect?", c:["Fake news","Cyberbullying","Privacy issue","Screen addiction"], a:1},
+  {q:"Excessive, uncontrolled use of digital devices is called:", c:["Online scam","Fake news","Screen addiction","Cyberbullying"], a:2},
+  {q:"Unauthorized access or misuse of someone's personal data online is a:", c:["Privacy issue","Online scam","Screen addiction","Fake news"], a:0},
+  {q:"A fraudulent activity conducted through the internet is an example of:", c:["Cyberbullying","Online scam","Privacy issue","Fake news"], a:1},
+  {q:"Digital citizenship refers to:", c:["Owning multiple digital devices","The responsible, safe, and respectful use of technology","Being famous online","Posting content frequently"], a:1},
+  {q:"Before sharing something online, asking \u201cIs it True?\u201d checks for:", c:["Accuracy","Relevance","Safety","Courtesy"], a:0},
+  {q:"Asking \u201cIs it Helpful?\u201d before posting online checks for:", c:["Accuracy","Value or benefit to others","Personal safety","Legal compliance"], a:1},
+  {q:"Asking \u201cIs it Respectful?\u201d before posting online checks for:", c:["File size","Courtesy toward others","Internet speed","Copyright status"], a:1},
+  {q:"Asking \u201cIs it Necessary?\u201d before posting online checks for:", c:["Relevance of the content","Battery life","Screen brightness","Word count"], a:0},
+  {q:"Asking \u201cIs it Safe?\u201d before posting online checks for:", c:["Font style","Security and protection from harm","Download speed","Word choice"], a:1},
+  {q:"Which of the following is NOT considered a form of digital media?", c:["Social Media","Streaming Services","Printed Newspaper","Messaging Apps"], a:2},
+  {q:"Practicing digital citizenship mainly means using technology in a way that is:", c:["Fast and entertaining only","Responsible, safe, and respectful","Anonymous at all times","Free of any rules"], a:1},
+
+  {u:"Unit II · Lesson 2.3 — Internet of Things (IoT)", q:"The term \u201cInternet of Things\u201d (IoT) was coined by:", c:["Tim Berners-Lee","Kevin Ashton","Johannes Gutenberg","Samuel Morse"], a:1},
+  {q:"Kevin Ashton, who coined the term IoT, was a co-founder of:", c:["IBM Research Lab","MIT's Auto-ID Center","Bell Laboratories","Stanford AI Lab"], a:1},
+  {q:"The core premise of the Internet of Things (IoT) is to:", c:["Replace the internet with a faster network","Connect everyday objects to a computing device to analyze and produce useful information","Eliminate the need for smartphones","Store data only on paper records"], a:1},
+  {q:"The concept of the Internet of Things (IoT) gained popularity starting in:", c:["The early 1990s","The 1980s","The 2010s","The 1960s"], a:0}
+];
+
+const quizEl = document.getElementById('quiz');
+const answers = new Array(DATA.length).fill(null);
+let finished = false;
+
+function render(){
+  quizEl.innerHTML = '';
+  DATA.forEach((item, idx) => {
+    if(item.u){
+      const label = document.createElement('div');
+      label.className = 'unit-label';
+      label.textContent = item.u;
+      quizEl.appendChild(label);
+    }
+    const qDiv = document.createElement('div');
+    qDiv.className = 'q';
+    qDiv.id = 'q'+idx;
+
+    const num = document.createElement('div');
+    num.className = 'q-num';
+    num.textContent = 'Item ' + (idx+1) + ' of ' + DATA.length;
+    qDiv.appendChild(num);
+
+    const qt = document.createElement('div');
+    qt.className = 'q-text';
+    qt.textContent = item.q;
+    qDiv.appendChild(qt);
+
+    const choicesDiv = document.createElement('div');
+    choicesDiv.className = 'choices';
+    const letters = ['A','B','C','D'];
+
+    item.c.forEach((choiceText, cIdx) => {
+      const lbl = document.createElement('label');
+      lbl.className = 'choice';
+      lbl.id = 'q'+idx+'c'+cIdx;
+
+      const input = document.createElement('input');
+      input.type = 'radio';
+      input.name = 'q'+idx;
+      input.value = cIdx;
+      input.addEventListener('change', () => {
+        answers[idx] = cIdx;
+        updateSelectedStyles(idx);
+        updateProgress();
+      });
+
+      const letterSpan = document.createElement('span');
+      letterSpan.className = 'letter';
+      letterSpan.textContent = letters[cIdx] + '.';
+
+      const textSpan = document.createElement('span');
+      textSpan.textContent = choiceText;
+
+      lbl.appendChild(input);
+      lbl.appendChild(letterSpan);
+      lbl.appendChild(textSpan);
+      choicesDiv.appendChild(lbl);
+    });
+
+    qDiv.appendChild(choicesDiv);
+    quizEl.appendChild(qDiv);
+  });
+}
+
+function updateSelectedStyles(idx){
+  const item = DATA[idx];
+  item.c.forEach((_, cIdx) => {
+    const lbl = document.getElementById('q'+idx+'c'+cIdx);
+    lbl.classList.toggle('selected', answers[idx] === cIdx);
+  });
+}
+
+function updateProgress(){
+  const answered = answers.filter(a => a !== null).length;
+  document.getElementById('progressText').textContent = answered + ' / ' + DATA.length + ' answered';
+  document.getElementById('footerCount').textContent = answered + ' of ' + DATA.length + ' answered';
+  document.getElementById('progressFill').style.width = (answered/DATA.length*100) + '%';
+}
+
+function remarkFor(pct){
+  if(pct === 100) return 'Perfect score. Nothing left to review.';
+  if(pct >= 90) return 'Excellent. Review the few you missed.';
+  if(pct >= 75) return 'Passing. Go over the misses below.';
+  if(pct >= 50) return 'Halfway there. Revisit the flagged items.';
+  return 'Needs more review — check every red item below.';
+}
+
+function finishTest(){
+  if(finished) return;
+  const unanswered = answers.filter(a => a === null).length;
+  if(unanswered > 0){
+    const proceed = confirm(unanswered + ' item(s) left unanswered. Finish anyway?');
+    if(!proceed) return;
+  }
+  finished = true;
+
+  let score = 0;
+  DATA.forEach((item, idx) => {
+    const qDiv = document.getElementById('q'+idx);
+    qDiv.classList.add('locked');
+    const isCorrect = answers[idx] === item.a;
+    if(isCorrect) score++;
+
+    const tag = document.createElement('div');
+    tag.className = 'grade-tag ' + (isCorrect ? 'correct' : 'incorrect');
+    tag.textContent = isCorrect ? 'CORRECT' : 'INCORRECT';
+    qDiv.appendChild(tag);
+    qDiv.classList.add(isCorrect ? 'correct' : 'incorrect');
+
+    item.c.forEach((_, cIdx) => {
+      const lbl = document.getElementById('q'+idx+'c'+cIdx);
+      const input = lbl.querySelector('input');
+      input.disabled = true;
+      if(cIdx === item.a) lbl.classList.add('mark-correct');
+      else if(cIdx === answers[idx] && cIdx !== item.a) lbl.classList.add('mark-incorrect');
+    });
+  });
+
+  const pct = Math.round(score/DATA.length*100);
+  document.getElementById('stampScore').textContent = score + ' / ' + DATA.length;
+  document.getElementById('stampPct').textContent = pct + '%';
+  document.getElementById('stampRemark').textContent = remarkFor(pct);
+  document.getElementById('stamp').classList.add('show');
+
+  document.getElementById('finishBtn').style.display = 'none';
+  document.getElementById('retakeBtn').style.display = 'inline-block';
+
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function retakeTest(){
+  finished = false;
+  for(let i=0;i<answers.length;i++) answers[i] = null;
+  document.getElementById('stamp').classList.remove('show');
+  document.getElementById('finishBtn').style.display = 'inline-block';
+  document.getElementById('retakeBtn').style.display = 'none';
+  render();
+  updateProgress();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+document.getElementById('finishBtn').addEventListener('click', finishTest);
+document.getElementById('retakeBtn').addEventListener('click', retakeTest);
+
+render();
+updateProgress();
+</script>
+
+</body>
+</html>
