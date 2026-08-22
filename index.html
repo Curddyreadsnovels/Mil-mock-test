@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Review Menu — Practice Tests</title>
+<style>
+  :root{
+    --paper:#faf9f4;
+    --rule:#d8d3c4;
+    --ink:#1f2a44;
+    --ink-soft:#5b6478;
+    --red:#b3312c;
+    --red-soft:#e7c9c6;
+    --green:#2f6d4f;
+    --green-soft:#cfe3d6;
+    --amber:#c98a2c;
+    --card:#ffffff;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Iowan Old Style','Georgia',serif;
+    background:
+      repeating-linear-gradient(var(--paper) 0 31px, var(--rule) 31px 32px);
+    background-color:var(--paper);
+    color:var(--ink);
+    min-height:100vh;
+    padding-bottom:80px;
+  }
+  header{
+    background:var(--ink);
+    color:var(--paper);
+    padding:36px 20px 30px;
+    text-align:center;
+    position:relative;
+  }
+  header .eyebrow{
+    font-family:'Courier New',monospace;
+    letter-spacing:.18em;
+    font-size:11px;
+    text-transform:uppercase;
+    color:#b9c2d9;
+    margin-bottom:8px;
+  }
+  header h1{
+    margin:0 0 8px;
+    font-size:clamp(26px,5vw,36px);
+    font-weight:700;
+    letter-spacing:.01em;
+  }
+  header p{
+    margin:0;
+    font-family:'Courier New',monospace;
+    font-size:13px;
+    color:#c7cee0;
+  }
+  main{
+    max-width:720px;
+    margin:0 auto;
+    padding:32px 18px 20px;
+  }
+  .intro{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-left:4px solid var(--amber);
+    padding:14px 16px;
+    margin-bottom:28px;
+    font-size:14px;
+    color:var(--ink-soft);
+    line-height:1.5;
+  }
+  .intro b{color:var(--ink);}
+  .menu{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+  .test-card{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:3px;
+    padding:18px 18px 16px;
+    display:flex;
+    align-items:flex-start;
+    gap:14px;
+    transition:box-shadow .2s, transform .15s;
+    text-decoration:none;
+    color:inherit;
+  }
+  .test-card:hover{
+    box-shadow:3px 3px 0 var(--rule);
+    transform:translateY(-1px);
+    border-color:var(--ink-soft);
+  }
+  .test-icon{
+    font-family:'Courier New',monospace;
+    font-weight:800;
+    font-size:20px;
+    color:var(--paper);
+    background:var(--ink);
+    width:44px;
+    height:44px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:3px;
+    flex-shrink:0;
+    margin-top:2px;
+  }
+  .test-body{
+    flex:1;
+  }
+  .test-title{
+    font-size:17px;
+    font-weight:700;
+    margin:0 0 4px;
+    color:var(--ink);
+  }
+  .test-meta{
+    font-family:'Courier New',monospace;
+    font-size:11px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--amber);
+    margin-bottom:6px;
+  }
+  .test-desc{
+    font-size:14px;
+    color:var(--ink-soft);
+    line-height:1.45;
+    margin:0;
+  }
+  .test-arrow{
+    font-family:'Courier New',monospace;
+    font-size:18px;
+    color:var(--rule);
+    align-self:center;
+    transition:color .2s;
+  }
+  .test-card:hover .test-arrow{
+    color:var(--ink);
+  }
+  footer{
+    text-align:center;
+    padding:30px 18px;
+    font-family:'Courier New',monospace;
+    font-size:11px;
+    color:var(--ink-soft);
+    letter-spacing:.06em;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">1st Quarter Examination Review</div>
+  <h1>Practice Test Menu</h1>
+  <p>Select a subject to begin &middot; answers hidden until you finish</p>
+</header>
+
+<main>
+  <div class="intro">
+    <b>How it works:</b> Each test is multiple-choice. Your selections are tracked with a progress bar. You can change answers anytime before clicking <b>Finish Test</b>. Correct and incorrect marks only appear after you submit.
+  </div>
+
+  <nav class="menu">
+    <a class="test-card" href="mil-test.html">
+      <div class="test-icon">M</div>
+      <div class="test-body">
+        <div class="test-meta">Media and Information Literacy &middot; 60 Items</div>
+        <div class="test-title">MIL Practice Test</div>
+        <p class="test-desc">Communication process & models, media literacy, evolution of media, digital media, and the Internet of Things.</p>
+      </div>
+      <div class="test-arrow">&rarr;</div>
+    </a>
+
+    <a class="test-card" href="peh-test.html">
+      <div class="test-icon">P</div>
+      <div class="test-body">
+        <div class="test-meta">Physical Education &amp; Health &middot; 50 Items</div>
+        <div class="test-title">PEH Practice Test</div>
+        <p class="test-desc">Nature and history of dance, dance styles and classifications, forms and types, benefits, and safety in dancing.</p>
+      </div>
+      <div class="test-arrow">&rarr;</div>
+    </a>
+
+    <a class="test-card" href="pr2-test.html">
+      <div class="test-icon">R</div>
+      <div class="test-body">
+        <div class="test-meta">Practical Research 2 &middot; 60 Items</div>
+        <div class="test-title">PR2 Practice Test</div>
+        <p class="test-desc">Qualities of quantitative research, identifying a research problem, and writing a research title.</p>
+      </div>
+      <div class="test-arrow">&rarr;</div>
+    </a>
+
+    <a class="test-card" href="iphp-test.html">
+      <div class="test-icon">I</div>
+      <div class="test-body">
+        <div class="test-meta">Introduction to Philosophy of the Human Person &middot; 60 Items</div>
+        <div class="test-title">IPHP Practice Test</div>
+        <p class="test-desc">Philosophy and its branches, logic and fallacies, truth and knowledge, logical investigation, and hierarchy of beings.</p>
+      </div>
+      <div class="test-arrow">&rarr;</div>
+    </a>
+  </nav>
+</main>
+
+<footer>
+  GOOD LUCK ON YOUR EXAMS
+</footer>
+
+</body>
+</html>
