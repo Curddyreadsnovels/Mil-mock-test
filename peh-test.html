@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PEH Practice Test — 50 Items</title>
+<style>
+  :root{
+    --paper:#faf9f4;
+    --rule:#d8d3c4;
+    --ink:#1f2a44;
+    --ink-soft:#5b6478;
+    --red:#b3312c;
+    --red-soft:#e7c9c6;
+    --green:#2f6d4f;
+    --green-soft:#cfe3d6;
+    --amber:#c98a2c;
+    --card:#ffffff;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Iowan Old Style','Georgia',serif;
+    background:
+      repeating-linear-gradient(var(--paper) 0 31px, var(--rule) 31px 32px);
+    background-color:var(--paper);
+    color:var(--ink);
+    padding-bottom:120px;
+  }
+  header{
+    background:var(--ink);
+    color:var(--paper);
+    padding:28px 20px 22px;
+    text-align:center;
+    position:relative;
+  }
+  header .eyebrow{
+    font-family:'Courier New',monospace;
+    letter-spacing:.18em;
+    font-size:11px;
+    text-transform:uppercase;
+    color:#b9c2d9;
+    margin-bottom:8px;
+  }
+  header h1{
+    margin:0 0 6px;
+    font-size:clamp(22px,5vw,32px);
+    font-weight:700;
+    letter-spacing:.01em;
+  }
+  header p{
+    margin:0;
+    font-family:'Courier New',monospace;
+    font-size:12px;
+    color:#c7cee0;
+  }
+  .progress-wrap{
+    position:sticky;
+    top:0;
+    z-index:20;
+    background:var(--paper);
+    border-bottom:1px solid var(--rule);
+    padding:10px 20px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    font-family:'Courier New',monospace;
+    font-size:12px;
+  }
+  .progress-bar{
+    flex:1;
+    height:6px;
+    background:var(--rule);
+    border-radius:3px;
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    width:0%;
+    background:var(--amber);
+    transition:width .25s ease;
+  }
+  main{
+    max-width:720px;
+    margin:0 auto;
+    padding:24px 18px 20px;
+  }
+  .instructions{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-left:4px solid var(--ink);
+    padding:14px 16px;
+    margin-bottom:26px;
+    font-size:14px;
+    color:var(--ink-soft);
+    line-height:1.5;
+  }
+  .instructions b{color:var(--ink);}
+  .unit-label{
+    font-family:'Courier New',monospace;
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--amber);
+    margin:30px 0 10px;
+    padding-bottom:6px;
+    border-bottom:1px dashed var(--rule);
+  }
+  .q{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:3px;
+    padding:16px 16px 14px;
+    margin-bottom:14px;
+    position:relative;
+  }
+  .q-num{
+    font-family:'Courier New',monospace;
+    font-weight:700;
+    color:var(--ink-soft);
+    font-size:12px;
+    margin-bottom:6px;
+  }
+  .q-text{
+    font-size:16px;
+    line-height:1.45;
+    margin-bottom:12px;
+    font-weight:600;
+  }
+  .choices{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .choice{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    padding:8px 10px;
+    border:1px solid var(--rule);
+    border-radius:3px;
+    cursor:pointer;
+    font-size:14.5px;
+    transition:background .15s, border-color .15s;
+  }
+  .choice:hover{background:#f4f2ea;}
+  .choice input{margin-top:3px;accent-color:var(--ink);}
+  .choice .letter{
+    font-family:'Courier New',monospace;
+    font-weight:700;
+    color:var(--ink-soft);
+    min-width:16px;
+  }
+  .choice.selected{
+    border-color:var(--ink);
+    background:#eef0f6;
+  }
+  .q.correct{border-color:var(--green);background:#fbfffc;}
+  .q.incorrect{border-color:var(--red);background:#fffaf9;}
+  .choice.mark-correct{
+    border-color:var(--green);
+    background:var(--green-soft);
+  }
+  .choice.mark-incorrect{
+    border-color:var(--red);
+    background:var(--red-soft);
+  }
+  .grade-tag{
+    position:absolute;
+    top:12px;
+    right:14px;
+    font-family:'Courier New',monospace;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.06em;
+    padding:2px 8px;
+    border-radius:10px;
+  }
+  .grade-tag.correct{background:var(--green);color:#fff;}
+  .grade-tag.incorrect{background:var(--red);color:#fff;}
+  .choices input, .choices .choice{pointer-events:auto;}
+  .locked .choice{cursor:default;}
+  .locked .choice:hover{background:inherit;}
+
+  footer.bar{
+    position:fixed;
+    bottom:0;
+    left:0;
+    right:0;
+    background:var(--ink);
+    color:var(--paper);
+    padding:12px 18px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    z-index:30;
+  }
+  footer.bar .count{
+    font-family:'Courier New',monospace;
+    font-size:12px;
+    color:#c7cee0;
+  }
+  .btn{
+    font-family:'Courier New',monospace;
+    font-weight:700;
+    font-size:13px;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    padding:11px 20px;
+    border-radius:3px;
+    border:none;
+    cursor:pointer;
+  }
+  .btn-finish{background:var(--red);color:#fff;}
+  .btn-finish:disabled{background:#5b6478;cursor:not-allowed;opacity:.6;}
+  .btn-retake{background:var(--amber);color:#1f1200;}
+
+  .stamp{
+    display:none;
+    position:sticky;
+    top:52px;
+    z-index:15;
+    max-width:720px;
+    margin:18px auto 0;
+    padding:0 18px;
+  }
+  .stamp.show{display:block;}
+  .stamp-card{
+    background:var(--card);
+    border:2px solid var(--ink);
+    border-radius:4px;
+    padding:20px;
+    text-align:center;
+    box-shadow:3px 3px 0 var(--rule);
+  }
+  .stamp-score{
+    font-size:44px;
+    font-weight:800;
+    color:var(--red);
+    font-family:'Courier New',monospace;
+    line-height:1;
+  }
+  .stamp-pct{
+    font-size:14px;
+    color:var(--ink-soft);
+    margin-top:6px;
+  }
+  .stamp-remark{
+    margin-top:10px;
+    font-style:italic;
+    color:var(--ink);
+    font-size:14px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Physical Education &amp; Health &middot; Dance</div>
+  <h1>PEH Practice Test</h1>
+  <p>50 items &middot; multiple choice &middot; answers reveal only after you finish</p>
+</header>
+
+<div class="progress-wrap">
+  <span id="progressText">0 / 50 answered</span>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+</div>
+
+<div class="stamp" id="stamp">
+  <div class="stamp-card">
+    <div class="stamp-score" id="stampScore">0 / 50</div>
+    <div class="stamp-pct" id="stampPct"></div>
+    <div class="stamp-remark" id="stampRemark"></div>
+  </div>
+</div>
+
+<main>
+  <div class="instructions">
+    <b>Instructions:</b> Choose the best answer for each item. You can change your answer any time before submitting.
+    Correct and incorrect marks, and the right answers, only appear after you press <b>Finish Test</b> below.
+  </div>
+  <div id="quiz"></div>
+</main>
+
+<footer class="bar">
+  <span class="count" id="footerCount">0 of 50 answered</span>
+  <div>
+    <button class="btn btn-finish" id="finishBtn">Finish Test</button>
+    <button class="btn btn-retake" id="retakeBtn" style="display:none;">Retake Test</button>
+  </div>
+</footer>
+
+<script>
+const DATA = [
+  {u:"Unit I · Nature and History of Dance", q:"What is the German word for \"dance\"?", c:["Damson","Tanz","Danse","Bailar"], a:0},
+  {q:"What best describes what dance is?", c:["A structured sport","Feelings/Emotions","A military exercise","A mathematical pattern"], a:1},
+  {q:"Dance is described as a _______ of society.", c:["reflection","mirror","shadow","product"], a:1},
+  {q:"What was the primary purpose of dance in Ancient Egypt?", c:["Entertainment for royalty","Religious Services","Military training","Agricultural rituals"], a:1},
+  {q:"Which is a category of Ancient Egyptian dance?", c:["Court Dance","War Dance","Folk Dance","Ballet"], a:1},
+
+  {u:"Unit II · Dance Styles and Classifications", q:"Which dance style is often called the \"backbone of dance\"?", c:["Jazz","Ballet","Contemporary","Hip-hop"], a:1},
+  {q:"Which dance style allows dancers to freely express their feelings?", c:["Ballet","Jazz","Contemporary","Ballroom"], a:2},
+  {q:"Which dance style is lively and commonly performed with upbeat music?", c:["Ballet","Contemporary","Jazz","Modern"], a:2},
+  {q:"Who usually performs traditional dances?", c:["Professional dancers","Community","Royal courts","Theater groups"], a:1},
+  {q:"What was one purpose of dance during the Middle Ages and Renaissance?", c:["Religious worship","Manner/Celebration","Military strategy","Trade negotiations"], a:1},
+  {q:"What best describes dances during the Prehistoric Period?", c:["Ritual ceremonies","Everyday Movements","Court performances","Theatrical plays"], a:1},
+  {q:"Where did real knowledge of dance begin to develop?", c:["Ancient Greece and Rome","Mediterranean and Middle Eastern Civilizations","Northern Europe","East Asia"], a:1},
+  {q:"How was dance mainly performed in Ancient Rome?", c:["Only in temples","Religious, social and entertainment","Exclusively for emperors","As a form of punishment"], a:1},
+  {q:"Which classification of ballet follows traditional ballet techniques?", c:["Neoclassical Ballet","Classical Ballet","Contemporary Ballet","Romantic Ballet"], a:1},
+  {q:"In which century did Modern Dance begin?", c:["18th Century","19th Century","20th Century","21st Century"], a:2},
+
+  {u:"Unit III · Forms and Types of Dance", q:"Which dance is known as a high-energy street dance characterized by rhythmic bounce, body isolations, and street-style movements?", c:["Jazz","Ballet","Hiphop","Contemporary"], a:2},
+  {q:"Ballroom dance is usually performed in what?", c:["Solo","Groups","Pairs","Trios"], a:2},
+  {q:"What is the competitive form of ballroom dance called?", c:["Social Dance","Dance Sports","Performance Dance","Street Dance"], a:1},
+  {q:"What requires communication between partners during competitions?", c:["Jazz","Ballet","Ballroom","Contemporary"], a:2},
+  {q:"Tinikling is an example of what type of dance?", c:["Modern Dance","Traditional/Folkdance","Ballet","Jazz"], a:1},
+  {q:"What combines cheering, dancing, tumbling, and gymnastics?", c:["Ballet","Jazz dance","Cheer dance","Ballroom dance"], a:2},
+  {q:"In which historical period were dances based on everyday activities like planting and harvesting?", c:["Ancient Period","Pre-historic","Medieval Period","Renaissance"], a:1},
+  {q:"What combines classical ballet with modern techniques?", c:["Classical Ballet","Neoclassical Ballet","Contemporary Ballet","Romantic Ballet"], a:2},
+
+  {u:"Unit IV · Benefits of Dancing", q:"What is one physical benefit of dancing regularly?", c:["Improved memory","Improved cardiovascular fitness","Better sleep only","Increased height"], a:1},
+  {q:"How can dance therapy help recover after an accident?", c:["By improving speed","Balance","By increasing weight","By reducing appetite"], a:1},
+  {q:"What is a mental or emotional benefit of dancing?", c:["Better vision","Body Confidence","Stronger bones","Faster reflexes"], a:1},
+  {q:"What does dancing help boost according to the lesson?", c:["Intelligence quotient","Self-esteem","Height","Appetite"], a:1},
+  {q:"Which describes a mental benefit of dancing?", c:["It improves balance","It helps keep the mind sharp","It builds muscle mass","It increases flexibility"], a:1},
+  {q:"What type of engagement does dance promote in a group?", c:["Political Engagement","Social Engagement","Economic Engagement","Religious Engagement"], a:1},
+  {q:"What is a social benefit of dance?", c:["Better grades","Belongingness","Higher salary","Improved vision"], a:1},
+  {q:"What does dance foster among group members?", c:["Competition","A feeling of belongingness","Isolation","Rivalry"], a:1},
+  {q:"What is a cultural benefit of dance?", c:["Better health","Appreciate of heritage","More friends","Higher income"], a:1},
+  {q:"What does dance celebrate by showcasing various cultural dances?", c:["A place's economy","A place's rich culture","A place's politics","A place's technology"], a:1},
+  {q:"What can help a person appreciate their heritage?", c:["Watching foreign movies","Studying a native dance movement","Reading fiction books","Playing video games"], a:1},
+
+  {u:"Unit V · Safety and Preparation in Dance", q:"What should a person assess before performing a dance style?", c:["Their shoe size","Their fitness level","Their favorite color","Their birth date"], a:1},
+  {q:"What should be considered when choosing clothes for dancing?", c:["Brand name only","Appropriate attire","Price only","Color only"], a:1},
+  {q:"What should a dancer do before starting to dance?", c:["Eat a heavy meal","Warm up","Take a nap","Drink cold water"], a:1},
+  {q:"What should a dancer do after dancing?", c:["Eat immediately","Cool down","Sleep","Take a shower immediately"], a:1},
+  {q:"What should always be considered while dancing?", c:["Resting","Stretching","Eating","Talking"], a:1},
+  {q:"What should dancers wear according to the dance style they will perform?", c:["Casual clothes","Suitable attire","Formal wear","Sports shoes only"], a:1},
+  {q:"Maria wants to try a difficult dance routine. What should she do first?", c:["Buy new shoes","Assess her fitness level","Invite friends","Choose music"], a:1},
+  {q:"Carlo is preparing for a dance performance. What should he do?", c:["Practice without warming up","Choosing attire suitable for the dance style","Skip meals","Sleep late"], a:1},
+  {q:"Ana is about to begin her dance practice. What should she do?", c:["Do a warm up","Start immediately","Eat snacks","Check her phone"], a:0},
+  {q:"After finishing a dance routine, what should Ben do to stay safe?", c:["Sit down immediately","Cool down and stretch","Drink energy drinks","Take a cold bath"], a:1},
+  {q:"A student joins a group dance activity and begins interacting with other dancers. What benefit is this?", c:["Physical Benefit","Social Benefit","Mental Benefit","Cultural Benefit"], a:1},
+  {q:"Liza learns a traditional dance from her hometown. What benefit is this?", c:["Physical Benefit","Social Benefit","Cultural Benefit","Mental Benefit"], a:2},
+  {q:"Mark feels more confident about himself after regularly participating in dance activities. What benefit is this?", c:["Physical Benefit","Social Benefit","Mental and Emotional Benefit","Cultural Benefit"], a:2},
+  {q:"A dancer wants to improve flexibility and posture through regular dancing. What benefit is this?", c:["Physical Benefit","Social Benefit","Mental Benefit","Cultural Benefit"], a:0},
+  {q:"A group of students performs a cultural dance from their country to show its traditions. What benefit is this?", c:["Physical Benefit","Social Benefit","Cultural Benefit","Mental Benefit"], a:2},
+  {q:"John wants to practice a dance routine that matches his current physical ability. What should he do?", c:["Practice immediately","Assess his fitness level before choosing the dance style","Copy professional dancers","Skip warm-up exercises"], a:1}
+];
+
+const quizEl = document.getElementById('quiz');
+const answers = new Array(DATA.length).fill(null);
+let finished = false;
+
+function render(){
+  quizEl.innerHTML = '';
+  DATA.forEach((item, idx) => {
+    if(item.u){
+      const label = document.createElement('div');
+      label.className = 'unit-label';
+      label.textContent = item.u;
+      quizEl.appendChild(label);
+    }
+    const qDiv = document.createElement('div');
+    qDiv.className = 'q';
+    qDiv.id = 'q'+idx;
+
+    const num = document.createElement('div');
+    num.className = 'q-num';
+    num.textContent = 'Item ' + (idx+1) + ' of ' + DATA.length;
+    qDiv.appendChild(num);
+
+    const qt = document.createElement('div');
+    qt.className = 'q-text';
+    qt.textContent = item.q;
+    qDiv.appendChild(qt);
+
+    const choicesDiv = document.createElement('div');
+    choicesDiv.className = 'choices';
+    const letters = ['A','B','C','D'];
+
+    item.c.forEach((choiceText, cIdx) => {
+      const lbl = document.createElement('label');
+      lbl.className = 'choice';
+      lbl.id = 'q'+idx+'c'+cIdx;
+
+      const input = document.createElement('input');
+      input.type = 'radio';
+      input.name = 'q'+idx;
+      input.value = cIdx;
+      input.addEventListener('change', () => {
+        answers[idx] = cIdx;
+        updateSelectedStyles(idx);
+        updateProgress();
+      });
+
+      const letterSpan = document.createElement('span');
+      letterSpan.className = 'letter';
+      letterSpan.textContent = letters[cIdx] + '.';
+
+      const textSpan = document.createElement('span');
+      textSpan.textContent = choiceText;
+
+      lbl.appendChild(input);
+      lbl.appendChild(letterSpan);
+      lbl.appendChild(textSpan);
+      choicesDiv.appendChild(lbl);
+    });
+
+    qDiv.appendChild(choicesDiv);
+    quizEl.appendChild(qDiv);
+  });
+}
+
+function updateSelectedStyles(idx){
+  const item = DATA[idx];
+  item.c.forEach((_, cIdx) => {
+    const lbl = document.getElementById('q'+idx+'c'+cIdx);
+    lbl.classList.toggle('selected', answers[idx] === cIdx);
+  });
+}
+
+function updateProgress(){
+  const answered = answers.filter(a => a !== null).length;
+  document.getElementById('progressText').textContent = answered + ' / ' + DATA.length + ' answered';
+  document.getElementById('footerCount').textContent = answered + ' of ' + DATA.length + ' answered';
+  document.getElementById('progressFill').style.width = (answered/DATA.length*100) + '%';
+}
+
+function remarkFor(pct){
+  if(pct === 100) return 'Perfect score. Nothing left to review.';
+  if(pct >= 90) return 'Excellent. Review the few you missed.';
+  if(pct >= 75) return 'Passing. Go over the misses below.';
+  if(pct >= 50) return 'Halfway there. Revisit the flagged items.';
+  return 'Needs more review — check every red item below.';
+}
+
+function finishTest(){
+  if(finished) return;
+  const unanswered = answers.filter(a => a === null).length;
+  if(unanswered > 0){
+    const proceed = confirm(unanswered + ' item(s) left unanswered. Finish anyway?');
+    if(!proceed) return;
+  }
+  finished = true;
+
+  let score = 0;
+  DATA.forEach((item, idx) => {
+    const qDiv = document.getElementById('q'+idx);
+    qDiv.classList.add('locked');
+    const isCorrect = answers[idx] === item.a;
+    if(isCorrect) score++;
+
+    const tag = document.createElement('div');
+    tag.className = 'grade-tag ' + (isCorrect ? 'correct' : 'incorrect');
+    tag.textContent = isCorrect ? 'CORRECT' : 'INCORRECT';
+    qDiv.appendChild(tag);
+    qDiv.classList.add(isCorrect ? 'correct' : 'incorrect');
+
+    item.c.forEach((_, cIdx) => {
+      const lbl = document.getElementById('q'+idx+'c'+cIdx);
+      const input = lbl.querySelector('input');
+      input.disabled = true;
+      if(cIdx === item.a) lbl.classList.add('mark-correct');
+      else if(cIdx === answers[idx] && cIdx !== item.a) lbl.classList.add('mark-incorrect');
+    });
+  });
+
+  const pct = Math.round(score/DATA.length*100);
+  document.getElementById('stampScore').textContent = score + ' / ' + DATA.length;
+  document.getElementById('stampPct').textContent = pct + '%';
+  document.getElementById('stampRemark').textContent = remarkFor(pct);
+  document.getElementById('stamp').classList.add('show');
+
+  document.getElementById('finishBtn').style.display = 'none';
+  document.getElementById('retakeBtn').style.display = 'inline-block';
+
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function retakeTest(){
+  finished = false;
+  for(let i=0;i<answers.length;i++) answers[i] = null;
+  document.getElementById('stamp').classList.remove('show');
+  document.getElementById('finishBtn').style.display = 'inline-block';
+  document.getElementById('retakeBtn').style.display = 'none';
+  render();
+  updateProgress();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+document.getElementById('finishBtn').addEventListener('click', finishTest);
+document.getElementById('retakeBtn').addEventListener('click', retakeTest);
+
+render();
+updateProgress();
+</script>
+
+</body>
+</html>

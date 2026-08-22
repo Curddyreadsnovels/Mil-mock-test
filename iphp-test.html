@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IPHP Practice Test — 60 Items</title>
+<style>
+  :root{
+    --paper:#faf9f4;
+    --rule:#d8d3c4;
+    --ink:#1f2a44;
+    --ink-soft:#5b6478;
+    --red:#b3312c;
+    --red-soft:#e7c9c6;
+    --green:#2f6d4f;
+    --green-soft:#cfe3d6;
+    --amber:#c98a2c;
+    --card:#ffffff;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Iowan Old Style','Georgia',serif;
+    background:
+      repeating-linear-gradient(var(--paper) 0 31px, var(--rule) 31px 32px);
+    background-color:var(--paper);
+    color:var(--ink);
+    padding-bottom:120px;
+  }
+  header{
+    background:var(--ink);
+    color:var(--paper);
+    padding:28px 20px 22px;
+    text-align:center;
+    position:relative;
+  }
+  header .eyebrow{
+    font-family:'Courier New',monospace;
+    letter-spacing:.18em;
+    font-size:11px;
+    text-transform:uppercase;
+    color:#b9c2d9;
+    margin-bottom:8px;
+  }
+  header h1{
+    margin:0 0 6px;
+    font-size:clamp(22px,5vw,32px);
+    font-weight:700;
+    letter-spacing:.01em;
+  }
+  header p{
+    margin:0;
+    font-family:'Courier New',monospace;
+    font-size:12px;
+    color:#c7cee0;
+  }
+  .progress-wrap{
+    position:sticky;
+    top:0;
+    z-index:20;
+    background:var(--paper);
+    border-bottom:1px solid var(--rule);
+    padding:10px 20px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    font-family:'Courier New',monospace;
+    font-size:12px;
+  }
+  .progress-bar{
+    flex:1;
+    height:6px;
+    background:var(--rule);
+    border-radius:3px;
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    width:0%;
+    background:var(--amber);
+    transition:width .25s ease;
+  }
+  main{
+    max-width:720px;
+    margin:0 auto;
+    padding:24px 18px 20px;
+  }
+  .instructions{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-left:4px solid var(--ink);
+    padding:14px 16px;
+    margin-bottom:26px;
+    font-size:14px;
+    color:var(--ink-soft);
+    line-height:1.5;
+  }
+  .instructions b{color:var(--ink);}
+  .unit-label{
+    font-family:'Courier New',monospace;
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--amber);
+    margin:30px 0 10px;
+    padding-bottom:6px;
+    border-bottom:1px dashed var(--rule);
+  }
+  .q{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:3px;
+    padding:16px 16px 14px;
+    margin-bottom:14px;
+    position:relative;
+  }
+  .q-num{
+    font-family:'Courier New',monospace;
+    font-weight:700;
+    color:var(--ink-soft);
+    font-size:12px;
+    margin-bottom:6px;
+  }
+  .q-text{
+    font-size:16px;
+    line-height:1.45;
+    margin-bottom:12px;
+    font-weight:600;
+  }
+  .choices{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .choice{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    padding:8px 10px;
+    border:1px solid var(--rule);
+    border-radius:3px;
+    cursor:pointer;
+    font-size:14.5px;
+    transition:background .15s, border-color .15s;
+  }
+  .choice:hover{background:#f4f2ea;}
+  .choice input{margin-top:3px;accent-color:var(--ink);}
+  .choice .letter{
+    font-family:'Courier New',monospace;
+    font-weight:700;
+    color:var(--ink-soft);
+    min-width:16px;
+  }
+  .choice.selected{
+    border-color:var(--ink);
+    background:#eef0f6;
+  }
+  .q.correct{border-color:var(--green);background:#fbfffc;}
+  .q.incorrect{border-color:var(--red);background:#fffaf9;}
+  .choice.mark-correct{
+    border-color:var(--green);
+    background:var(--green-soft);
+  }
+  .choice.mark-incorrect{
+    border-color:var(--red);
+    background:var(--red-soft);
+  }
+  .grade-tag{
+    position:absolute;
+    top:12px;
+    right:14px;
+    font-family:'Courier New',monospace;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.06em;
+    padding:2px 8px;
+    border-radius:10px;
+  }
+  .grade-tag.correct{background:var(--green);color:#fff;}
+  .grade-tag.incorrect{background:var(--red);color:#fff;}
+  .choices input, .choices .choice{pointer-events:auto;}
+  .locked .choice{cursor:default;}
+  .locked .choice:hover{background:inherit;}
+
+  footer.bar{
+    position:fixed;
+    bottom:0;
+    left:0;
+    right:0;
+    background:var(--ink);
+    color:var(--paper);
+    padding:12px 18px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    z-index:30;
+  }
+  footer.bar .count{
+    font-family:'Courier New',monospace;
+    font-size:12px;
+    color:#c7cee0;
+  }
+  .btn{
+    font-family:'Courier New',monospace;
+    font-weight:700;
+    font-size:13px;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    padding:11px 20px;
+    border-radius:3px;
+    border:none;
+    cursor:pointer;
+  }
+  .btn-finish{background:var(--red);color:#fff;}
+  .btn-finish:disabled{background:#5b6478;cursor:not-allowed;opacity:.6;}
+  .btn-retake{background:var(--amber);color:#1f1200;}
+
+  .stamp{
+    display:none;
+    position:sticky;
+    top:52px;
+    z-index:15;
+    max-width:720px;
+    margin:18px auto 0;
+    padding:0 18px;
+  }
+  .stamp.show{display:block;}
+  .stamp-card{
+    background:var(--card);
+    border:2px solid var(--ink);
+    border-radius:4px;
+    padding:20px;
+    text-align:center;
+    box-shadow:3px 3px 0 var(--rule);
+  }
+  .stamp-score{
+    font-size:44px;
+    font-weight:800;
+    color:var(--red);
+    font-family:'Courier New',monospace;
+    line-height:1;
+  }
+  .stamp-pct{
+    font-size:14px;
+    color:var(--ink-soft);
+    margin-top:6px;
+  }
+  .stamp-remark{
+    margin-top:10px;
+    font-style:italic;
+    color:var(--ink);
+    font-size:14px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Introduction to the Philosophy of the Human Person &middot; 1st Quarter</div>
+  <h1>IPHP Practice Test</h1>
+  <p>60 items &middot; multiple choice &middot; answers reveal only after you finish</p>
+</header>
+
+<div class="progress-wrap">
+  <span id="progressText">0 / 60 answered</span>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+</div>
+
+<div class="stamp" id="stamp">
+  <div class="stamp-card">
+    <div class="stamp-score" id="stampScore">0 / 60</div>
+    <div class="stamp-pct" id="stampPct"></div>
+    <div class="stamp-remark" id="stampRemark"></div>
+  </div>
+</div>
+
+<main>
+  <div class="instructions">
+    <b>Instructions:</b> Choose the best answer for each item. You can change your answer any time before submitting.
+    Correct and incorrect marks, and the right answers, only appear after you press <b>Finish Test</b> below.
+  </div>
+  <div id="quiz"></div>
+</main>
+
+<footer class="bar">
+  <span class="count" id="footerCount">0 of 60 answered</span>
+  <div>
+    <button class="btn btn-finish" id="finishBtn">Finish Test</button>
+    <button class="btn btn-retake" id="retakeBtn" style="display:none;">Retake Test</button>
+  </div>
+</footer>
+
+<script>
+const DATA = [
+  {u:"Unit I · Lesson 1 — The Birth of Mind", q:"Philosophy comes from two Greek words: Philo meaning \"love\" and Sophia meaning what?", c:["Truth","Wisdom","Knowledge","Beauty"], a:1},
+  {q:"What does the word Philosophy literally mean?", c:["Love of Truth","Love of Wisdom","Study of Knowledge","Search for Reality"], a:1},
+  {q:"Philosophy is the study of fundamental questions about truth, knowledge, reality, morality, and what else?", c:["Art","Human existence","History","Science"], a:1},
+  {q:"What does philosophy teach people to do rather than simply accepting information?", c:["Memorize facts","Think deeply, ask questions, and seek the truth","Follow traditions","Obey authority"], a:1},
+  {q:"Which branch of philosophy studies reality and existence?", c:["Epistemology","Metaphysics","Logic","Axiology"], a:1},
+  {q:"Which branch of philosophy studies knowledge?", c:["Metaphysics","Epistemology","Logic","Ethics"], a:1},
+  {q:"Which branch of philosophy studies correct reasoning?", c:["Axiology","Logic","Metaphysics","Aesthetics"], a:1},
+  {q:"Which branch of philosophy studies values and moral principles?", c:["Ethics","Axiology","Metaphysics","Logic"], a:1},
+  {q:"Which branch of philosophy studies morality?", c:["Axiology","Ethics","Metaphysics","Epistemology"], a:1},
+  {q:"Which branch of philosophy studies beauty and art?", c:["Logic","Aesthetics","Metaphysics","Epistemology"], a:1},
+  {q:"Philosophizing means using critical thinking, questioning, reflection, and reasoning in the search for what?", c:["Wealth","Truth","Power","Fame"], a:1},
+  {q:"Wonder is called the beginning of philosophy because it encourages people to do what?", c:["Accept everything","Ask questions","Follow rules","Memorize facts"], a:1},
+
+  {u:"Unit I · Lesson 2 — The Mind's First Step", q:"Logic is the branch of philosophy that studies what?", c:["Beauty","Correct reasoning","Human existence","Moral values"], a:1},
+  {q:"Logic helps us distinguish between good arguments, bad arguments, truth, and what?", c:["Opinions","False reasoning","Beliefs","Emotions"], a:1},
+  {q:"In philosophy, an argument is a set of statements where reasons (premises) support a what?", c:["Question","Conclusion","Theory","Hypothesis"], a:1},
+  {q:"What is a premise in an argument?", c:["The final statement","A supporting statement or reason used to prove a conclusion","A question asked","A personal opinion"], a:1},
+  {q:"What is the conclusion in an argument?", c:["The first statement","The statement that follows from the premises","A question","An assumption"], a:1},
+  {q:"Deductive reasoning provides conclusions with what quality?", c:["Probability","Certainty","Possibility","Uncertainty"], a:1},
+  {q:"In deductive reasoning, if all premises are true and the reasoning is valid, the conclusion must be what?", c:["Probable","True","False","Uncertain"], a:1},
+  {q:"Inductive reasoning provides conclusions that are probable but not always what?", c:["False","Certain","Valid","Logical"], a:1},
+  {q:"\"All birds have feathers. Eagles are birds. Therefore, eagles have feathers.\" This is an example of which type of reasoning?", c:["Inductive reasoning","Deductive reasoning","False reasoning","Circular reasoning"], a:1},
+  {q:"\"All birds can fly. Ostriches are birds. Therefore, ostriches can fly.\" This flawed example demonstrates the limitation of which reasoning?", c:["Deductive reasoning","Inductive reasoning","Logical validity","Apprehension"], a:1},
+  {q:"A logical fallacy is an error in reasoning that weakens an what?", c:["Theory","Argument","Fact","Hypothesis"], a:1},
+  {q:"Which fallacy attacks the individual making the argument instead of answering the argument itself?", c:["Bandwagon","Ad Hominem","Generalization","False Dilemma"], a:1},
+  {q:"Which fallacy claims something is true simply because many people believe it?", c:["Ad Hominem","Bandwagon","Generalization","False Dilemma"], a:1},
+  {q:"Which fallacy makes a conclusion based on too little evidence?", c:["False Dilemma","Generalization","Bandwagon","Ad Hominem"], a:1},
+  {q:"Which fallacy presents only two choices when more options actually exist?", c:["Generalization","False Dilemma","Bandwagon","Ad Hominem"], a:1},
+
+  {u:"Unit I · Lessons 3 & 4 — Truth and Knowledge", q:"Epistemology is the branch of philosophy that studies what?", c:["Reality","Knowledge","Morality","Beauty"], a:1},
+  {q:"Knowledge is traditionally defined as what?", c:["True Belief","Justified True Belief","Belief and Truth","Opinion and Fact"], a:1},
+  {q:"What does JTB stand for in the definition of knowledge?", c:["Justified True Belief","Justice Truth Belief","Judgment True Belief","Justified Theory Base"], a:0},
+  {q:"Belief is defined as accepting or thinking that something is what?", c:["False","True","Possible","Probable"], a:1},
+  {q:"Truth means that a statement matches what?", c:["Opinion","Reality or facts","Desire","Belief"], a:1},
+  {q:"Justification means having sufficient evidence or good what?", c:["Feelings","Reasons","Intuitions","Habits"], a:1},
+  {q:"For knowledge to exist, which three components must all be present?", c:["Opinion, fact, and truth","Belief, truth, and justification","Logic, reason, and emotion","Premise, conclusion, and validity"], a:1},
+  {q:"In Plato's Allegory of the Cave, the prisoners represent people who mistake appearances for what?", c:["Shadows","Reality","Knowledge","Truth"], a:1},
+  {q:"In Plato's Allegory of the Cave, the shadows represent false or incomplete what?", c:["Reality","Knowledge","Truth","Belief"], a:1},
+  {q:"The freed prisoner in Plato's cave represents a person who discovers truth through education and what?", c:["Tradition","Critical thinking","Authority","Memorization"], a:1},
+  {q:"Why do the prisoners in Plato's cave reject the truth?", c:["They hate knowledge","They are comfortable with what they already know","They fear the dark","They cannot see"], a:1},
+  {q:"The Gettier Problem challenges the traditional definition of knowledge as what?", c:["True Belief","Justified True Belief","Logical Truth","Empirical Evidence"], a:1},
+  {q:"A Gettier case occurs when a person's belief is justified, true, and believed, but turns out to be true by what?", c:["Logic","Accident or coincidence","Reasoning","Experience"], a:1},
+  {q:"According to the lesson, what should we not assume about appearances?", c:["That they are beautiful","That they represent the whole of reality","That they are false","That they are temporary"], a:1},
+
+  {u:"Unit I · Lesson 5 — Logical Investigation", q:"Validity focuses on the logical structure of the what?", c:["Premise","Argument","Conclusion","Theory"], a:1},
+  {q:"A correct argument requires more than simply having a what?", c:["Premise","Conclusion","Question","Fact"], a:1},
+  {q:"A good argument should provide relevant and sufficient support for its what?", c:["Premise","Conclusion","Assumption","Question"], a:1},
+  {q:"When evaluating an argument, which of the following should you examine?", c:["Only the conclusion","Premises, truth of premises, logical connection, and conclusion","Only the premises","Only the grammar"], a:1},
+  {q:"If two bases argue or have different explanations, the argument is good but not what?", c:["Valid","Correct","Logical","Strong"], a:1},
+  {q:"Aristotelian logic focuses on structured reasoning and correctness of premises and what?", c:["Questions","Conclusions","Assumptions","Hypotheses"], a:1},
+  {q:"In Aristotelian logic, apprehension answers which question?", c:["Why should I accept this conclusion?","What is it?","What can I say about it?","How does it work?"], a:1},
+  {q:"In Aristotelian logic, judgment answers which question?", c:["What is it?","What can I say about it?","Why should I accept this conclusion?","Who said it?"], a:1},
+  {q:"In Aristotelian logic, reasoning answers which question?", c:["What is it?","What can I say about it?","Why should I accept this conclusion?","Where is it?"], a:2},
+  {q:"Apprehension involves understanding or identifying a what?", c:["Conclusion","Concept","Premise","Argument"], a:1},
+  {q:"Judgment involves connecting concepts to make a statement that can be true or what?", c:["Valid","False","Logical","Strong"], a:1},
+  {q:"Reasoning involves connecting two or more judgments to arrive at a what?", c:["Premise","Conclusion","Fact","Question"], a:1},
+  {q:"\"Flood control is a government project.\" This statement is an example of which level of argumentation?", c:["Judgment","Apprehension","Reasoning","Conclusion"], a:1},
+  {q:"\"Effective flood control can reduce damage caused by flooding.\" This statement is an example of which level?", c:["Apprehension","Judgment","Reasoning","Conclusion"], a:1},
+  {q:"\"Therefore, Project X can help reduce flooding.\" This statement is an example of which level?", c:["Apprehension","Judgment","Reasoning","Conclusion"], a:2},
+  {q:"Corruption is defined as the misuse of public power or position for personal what?", c:["Benefit","Gain","Wealth","Power"], a:1},
+  {q:"\"Public funds are intended for the benefit of citizens.\" This statement represents which level of argumentation?", c:["Apprehension","Judgment","Reasoning","Conclusion"], a:1},
+
+  {u:"Unit I · Lesson 6 — Hierarchy of Beings", q:"In philosophy, \"beings\" refers to what?", c:["Only human beings","Everything that exists","Only living things","Only animals"], a:1},
+  {q:"Aristotle's hierarchy of living beings emphasizes the distinctive capacity of human beings, which is what?", c:["Emotion","Rationality","Strength","Speed"], a:1},
+  {q:"Which of the following are factors that affect human beings' capability to rationalize?", c:["Wealth, education, and status","Emotions, desire, and survivability","Age, gender, and nationality","Religion, culture, and language"], a:1},
+  {q:"The examination emphasizes Aristotle's hierarchy of living beings and the human capacity for what?", c:["Emotion","Rationality","Physical strength","Social interaction"], a:1},
+  {q:"Which of the following is NOT a factor affecting human beings' capability to rationalize?", c:["Emotions","Desire","Education","Survivability"], a:2}
+];
+
+const quizEl = document.getElementById('quiz');
+const answers = new Array(DATA.length).fill(null);
+let finished = false;
+
+function render(){
+  quizEl.innerHTML = '';
+  DATA.forEach((item, idx) => {
+    if(item.u){
+      const label = document.createElement('div');
+      label.className = 'unit-label';
+      label.textContent = item.u;
+      quizEl.appendChild(label);
+    }
+    const qDiv = document.createElement('div');
+    qDiv.className = 'q';
+    qDiv.id = 'q'+idx;
+
+    const num = document.createElement('div');
+    num.className = 'q-num';
+    num.textContent = 'Item ' + (idx+1) + ' of ' + DATA.length;
+    qDiv.appendChild(num);
+
+    const qt = document.createElement('div');
+    qt.className = 'q-text';
+    qt.textContent = item.q;
+    qDiv.appendChild(qt);
+
+    const choicesDiv = document.createElement('div');
+    choicesDiv.className = 'choices';
+    const letters = ['A','B','C','D'];
+
+    item.c.forEach((choiceText, cIdx) => {
+      const lbl = document.createElement('label');
+      lbl.className = 'choice';
+      lbl.id = 'q'+idx+'c'+cIdx;
+
+      const input = document.createElement('input');
+      input.type = 'radio';
+      input.name = 'q'+idx;
+      input.value = cIdx;
+      input.addEventListener('change', () => {
+        answers[idx] = cIdx;
+        updateSelectedStyles(idx);
+        updateProgress();
+      });
+
+      const letterSpan = document.createElement('span');
+      letterSpan.className = 'letter';
+      letterSpan.textContent = letters[cIdx] + '.';
+
+      const textSpan = document.createElement('span');
+      textSpan.textContent = choiceText;
+
+      lbl.appendChild(input);
+      lbl.appendChild(letterSpan);
+      lbl.appendChild(textSpan);
+      choicesDiv.appendChild(lbl);
+    });
+
+    qDiv.appendChild(choicesDiv);
+    quizEl.appendChild(qDiv);
+  });
+}
+
+function updateSelectedStyles(idx){
+  const item = DATA[idx];
+  item.c.forEach((_, cIdx) => {
+    const lbl = document.getElementById('q'+idx+'c'+cIdx);
+    lbl.classList.toggle('selected', answers[idx] === cIdx);
+  });
+}
+
+function updateProgress(){
+  const answered = answers.filter(a => a !== null).length;
+  document.getElementById('progressText').textContent = answered + ' / ' + DATA.length + ' answered';
+  document.getElementById('footerCount').textContent = answered + ' of ' + DATA.length + ' answered';
+  document.getElementById('progressFill').style.width = (answered/DATA.length*100) + '%';
+}
+
+function remarkFor(pct){
+  if(pct === 100) return 'Perfect score. Nothing left to review.';
+  if(pct >= 90) return 'Excellent. Review the few you missed.';
+  if(pct >= 75) return 'Passing. Go over the misses below.';
+  if(pct >= 50) return 'Halfway there. Revisit the flagged items.';
+  return 'Needs more review — check every red item below.';
+}
+
+function finishTest(){
+  if(finished) return;
+  const unanswered = answers.filter(a => a === null).length;
+  if(unanswered > 0){
+    const proceed = confirm(unanswered + ' item(s) left unanswered. Finish anyway?');
+    if(!proceed) return;
+  }
+  finished = true;
+
+  let score = 0;
+  DATA.forEach((item, idx) => {
+    const qDiv = document.getElementById('q'+idx);
+    qDiv.classList.add('locked');
+    const isCorrect = answers[idx] === item.a;
+    if(isCorrect) score++;
+
+    const tag = document.createElement('div');
+    tag.className = 'grade-tag ' + (isCorrect ? 'correct' : 'incorrect');
+    tag.textContent = isCorrect ? 'CORRECT' : 'INCORRECT';
+    qDiv.appendChild(tag);
+    qDiv.classList.add(isCorrect ? 'correct' : 'incorrect');
+
+    item.c.forEach((_, cIdx) => {
+      const lbl = document.getElementById('q'+idx+'c'+cIdx);
+      const input = lbl.querySelector('input');
+      input.disabled = true;
+      if(cIdx === item.a) lbl.classList.add('mark-correct');
+      else if(cIdx === answers[idx] && cIdx !== item.a) lbl.classList.add('mark-incorrect');
+    });
+  });
+
+  const pct = Math.round(score/DATA.length*100);
+  document.getElementById('stampScore').textContent = score + ' / ' + DATA.length;
+  document.getElementById('stampPct').textContent = pct + '%';
+  document.getElementById('stampRemark').textContent = remarkFor(pct);
+  document.getElementById('stamp').classList.add('show');
+
+  document.getElementById('finishBtn').style.display = 'none';
+  document.getElementById('retakeBtn').style.display = 'inline-block';
+
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function retakeTest(){
+  finished = false;
+  for(let i=0;i<answers.length;i++) answers[i] = null;
+  document.getElementById('stamp').classList.remove('show');
+  document.getElementById('finishBtn').style.display = 'inline-block';
+  document.getElementById('retakeBtn').style.display = 'none';
+  render();
+  updateProgress();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+document.getElementById('finishBtn').addEventListener('click', finishTest);
+document.getElementById('retakeBtn').addEventListener('click', retakeTest);
+
+render();
+updateProgress();
+</script>
+
+</body>
+</html>
