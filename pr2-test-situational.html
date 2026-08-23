@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PR2 Situational Test — 60 Items</title>
+<style>
+  :root{
+    --paper:#faf9f4;
+    --rule:#d8d3c4;
+    --ink:#1f2a44;
+    --ink-soft:#5b6478;
+    --red:#b3312c;
+    --red-soft:#e7c9c6;
+    --green:#2f6d4f;
+    --green-soft:#cfe3d6;
+    --amber:#c98a2c;
+    --card:#ffffff;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Iowan Old Style','Georgia',serif;
+    background:
+      repeating-linear-gradient(var(--paper) 0 31px, var(--rule) 31px 32px);
+    background-color:var(--paper);
+    color:var(--ink);
+    padding-bottom:120px;
+  }
+  header{
+    background:var(--ink);
+    color:var(--paper);
+    padding:28px 20px 22px;
+    text-align:center;
+    position:relative;
+  }
+  header .eyebrow{
+    font-family:'Courier New',monospace;
+    letter-spacing:.18em;
+    font-size:11px;
+    text-transform:uppercase;
+    color:#b9c2d9;
+    margin-bottom:8px;
+  }
+  header h1{
+    margin:0 0 6px;
+    font-size:clamp(22px,5vw,32px);
+    font-weight:700;
+    letter-spacing:.01em;
+  }
+  header p{
+    margin:0;
+    font-family:'Courier New',monospace;
+    font-size:12px;
+    color:#c7cee0;
+  }
+  .progress-wrap{
+    position:sticky;
+    top:0;
+    z-index:20;
+    background:var(--paper);
+    border-bottom:1px solid var(--rule);
+    padding:10px 20px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    font-family:'Courier New',monospace;
+    font-size:12px;
+  }
+  .progress-bar{
+    flex:1;
+    height:6px;
+    background:var(--rule);
+    border-radius:3px;
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    width:0%;
+    background:var(--amber);
+    transition:width .25s ease;
+  }
+  main{
+    max-width:720px;
+    margin:0 auto;
+    padding:24px 18px 20px;
+  }
+  .instructions{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-left:4px solid var(--ink);
+    padding:14px 16px;
+    margin-bottom:26px;
+    font-size:14px;
+    color:var(--ink-soft);
+    line-height:1.5;
+  }
+  .instructions b{color:var(--ink);}
+  .unit-label{
+    font-family:'Courier New',monospace;
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--amber);
+    margin:30px 0 10px;
+    padding-bottom:6px;
+    border-bottom:1px dashed var(--rule);
+  }
+  .q{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:3px;
+    padding:16px 16px 14px;
+    margin-bottom:14px;
+    position:relative;
+  }
+  .q-num{
+    font-family:'Courier New',monospace;
+    font-weight:700;
+    color:var(--ink-soft);
+    font-size:12px;
+    margin-bottom:6px;
+  }
+  .q-text{
+    font-size:16px;
+    line-height:1.45;
+    margin-bottom:12px;
+    font-weight:600;
+  }
+  .choices{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .choice{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    padding:8px 10px;
+    border:1px solid var(--rule);
+    border-radius:3px;
+    cursor:pointer;
+    font-size:14.5px;
+    transition:background .15s, border-color .15s;
+  }
+  .choice:hover{background:#f4f2ea;}
+  .choice input{margin-top:3px;accent-color:var(--ink);}
+  .choice .letter{
+    font-family:'Courier New',monospace;
+    font-weight:700;
+    color:var(--ink-soft);
+    min-width:16px;
+  }
+  .choice.selected{
+    border-color:var(--ink);
+    background:#eef0f6;
+  }
+  .q.correct{border-color:var(--green);background:#fbfffc;}
+  .q.incorrect{border-color:var(--red);background:#fffaf9;}
+  .choice.mark-correct{
+    border-color:var(--green);
+    background:var(--green-soft);
+  }
+  .choice.mark-incorrect{
+    border-color:var(--red);
+    background:var(--red-soft);
+  }
+  .grade-tag{
+    position:absolute;
+    top:12px;
+    right:14px;
+    font-family:'Courier New',monospace;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.06em;
+    padding:2px 8px;
+    border-radius:10px;
+  }
+  .grade-tag.correct{background:var(--green);color:#fff;}
+  .grade-tag.incorrect{background:var(--red);color:#fff;}
+  .choices input, .choices .choice{pointer-events:auto;}
+  .locked .choice{cursor:default;}
+  .locked .choice:hover{background:inherit;}
+
+  footer.bar{
+    position:fixed;
+    bottom:0;
+    left:0;
+    right:0;
+    background:var(--ink);
+    color:var(--paper);
+    padding:12px 18px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    z-index:30;
+  }
+  footer.bar .count{
+    font-family:'Courier New',monospace;
+    font-size:12px;
+    color:#c7cee0;
+  }
+  .btn{
+    font-family:'Courier New',monospace;
+    font-weight:700;
+    font-size:13px;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    padding:11px 20px;
+    border-radius:3px;
+    border:none;
+    cursor:pointer;
+  }
+  .btn-finish{background:var(--red);color:#fff;}
+  .btn-finish:disabled{background:#5b6478;cursor:not-allowed;opacity:.6;}
+  .btn-retake{background:var(--amber);color:#1f1200;}
+
+  .stamp{
+    display:none;
+    position:sticky;
+    top:52px;
+    z-index:15;
+    max-width:720px;
+    margin:18px auto 0;
+    padding:0 18px;
+  }
+  .stamp.show{display:block;}
+  .stamp-card{
+    background:var(--card);
+    border:2px solid var(--ink);
+    border-radius:4px;
+    padding:20px;
+    text-align:center;
+    box-shadow:3px 3px 0 var(--rule);
+  }
+  .stamp-score{
+    font-size:44px;
+    font-weight:800;
+    color:var(--red);
+    font-family:'Courier New',monospace;
+    line-height:1;
+  }
+  .stamp-pct{
+    font-size:14px;
+    color:var(--ink-soft);
+    margin-top:6px;
+  }
+  .stamp-remark{
+    margin-top:10px;
+    font-style:italic;
+    color:var(--ink);
+    font-size:14px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Practical Research 2 &middot; Quantitative Research</div>
+  <h1>PR2 Situational Test</h1>
+  <p>60 items &middot; situational / scenario-based &middot; answers reveal only after you finish</p>
+</header>
+
+<div class="progress-wrap">
+  <span id="progressText">0 / 60 answered</span>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+</div>
+
+<div class="stamp" id="stamp">
+  <div class="stamp-card">
+    <div class="stamp-score" id="stampScore">0 / 60</div>
+    <div class="stamp-pct" id="stampPct"></div>
+    <div class="stamp-remark" id="stampRemark"></div>
+  </div>
+</div>
+
+<main>
+  <div class="instructions">
+    <b>Instructions:</b> Read each scenario carefully and choose the best answer. You can change your answer any time before submitting.
+    Correct and incorrect marks, and the right answers, only appear after you press <b>Finish Test</b> below.
+  </div>
+  <div id="quiz"></div>
+</main>
+
+<footer class="bar">
+  <span class="count" id="footerCount">0 of 60 answered</span>
+  <div>
+    <button class="btn btn-finish" id="finishBtn">Finish Test</button>
+    <button class="btn btn-retake" id="retakeBtn" style="display:none;">Retake Test</button>
+  </div>
+</footer>
+
+<script>
+const DATA = [
+  {u:"Unit I · Variables & Research Design", q:"A researcher wants to find out if the amount of fertilizer used affects the height of tomato plants. In this study, what is the independent variable?", c:["Height of tomato plants","Amount of fertilizer","Type of soil","Number of days"], a:1},
+  {q:"In the same fertilizer study, what is the dependent variable?", c:["Amount of fertilizer","Height of tomato plants","Type of tomato","Watering schedule"], a:1},
+  {q:"A student is investigating whether listening to classical music improves test scores. The test scores are the variable being measured. What type of variable is this?", c:["Independent variable","Dependent variable","Control variable","Constant variable"], a:1},
+  {q:"A teacher studies the effect of study time on student performance. Study time is the factor being manipulated. What is this variable called?", c:["Dependent variable","Independent variable","Extraneous variable","Moderator variable"], a:1},
+  {q:"Dr. Santos is conducting an experiment where she controls the temperature in a room to see how it affects worker productivity. The room temperature is the:", c:["Dependent variable","Independent variable","Control variable","Intervening variable"], a:1},
+  {q:"In a study about the effect of sleep duration on memory retention, memory retention is measured using a recall test. Memory retention is the:", c:["Independent variable","Dependent variable","Constant","Hypothesis"], a:1},
+  {q:"A researcher keeps the amount of water given to all plants the same while testing different types of fertilizer. The amount of water is a:", c:["Independent variable","Dependent variable","Control variable","Confounding variable"], a:2},
+  {q:"Maria wants to know if brand name affects consumer trust. She surveys 500 people about their trust levels toward different brands. In this study, consumer trust is the:", c:["Independent variable","Dependent variable","Sample size","Population"], a:1},
+  {q:"A scientist changes the dosage of a medicine to observe changes in patient recovery time. Patient recovery time is the:", c:["Independent variable","Dependent variable","Control variable","Treatment"], a:1},
+  {q:"In an experiment testing whether color of packaging affects product sales, the color of packaging is the:", c:["Dependent variable","Independent variable","Constant","Research gap"], a:1},
+
+  {u:"Unit I · Characteristics of Quantitative Research", q:"A researcher surveys 10,000 voters to predict election results for the entire country. Which characteristic of quantitative research is being demonstrated?", c:["Controllability","Generalizability","Objectivity","Replicability"], a:1},
+  {q:"Dr. Cruz uses a standardized questionnaire with a scoring rubric to measure stress levels in nurses. This demonstrates which characteristic?", c:["Controllability","Generalizability","Objectivity","Replicability"], a:2},
+  {q:"A pharmaceutical company conducts a drug trial in a controlled laboratory where all variables are monitored and regulated. This shows:", c:["Controllability","Generalizability","Objectivity","Replicability"], a:0},
+  {q:"Another research team repeats a published experiment on plant growth and obtains similar results. This demonstrates:", c:["Controllability","Generalizability","Objectivity","Replicability"], a:3},
+  {q:"A market researcher uses a structured survey with numerical ratings to measure customer satisfaction. This reflects:", c:["Controllability","Generalizability","Objectivity","Replicability"], a:2},
+  {q:"A university study collects data from 5,000 students across different regions to make conclusions about all college students in the Philippines. This is an example of:", c:["Controllability","Generalizability","Objectivity","Replicability"], a:1},
+  {q:"A chemistry lab ensures that temperature, pressure, and humidity are kept constant during an experiment. This demonstrates:", c:["Controllability","Generalizability","Objectivity","Replicability"], a:0},
+  {q:"A psychology study uses a Likert scale (1-5) to measure anxiety levels, making the data observable and measurable. This reflects:", c:["Controllability","Generalizability","Objectivity","Replicability"], a:2},
+  {q:"A nutrition study is replicated by three different universities, all arriving at the same conclusion about vitamin C effects. This shows:", c:["Controllability","Generalizability","Objectivity","Replicability"], a:3},
+  {q:"A government agency surveys a large representative sample to estimate national unemployment rates. This demonstrates:", c:["Controllability","Generalizability","Objectivity","Replicability"], a:1},
+
+  {u:"Unit I · Strengths & Weaknesses", q:"A researcher wants to study the eating habits of all Filipinos but finds that surveying millions of people requires enormous time and funding. This illustrates which weakness?", c:["Statistical analysis requires an expert","Too simplistic","Large sample size requires time and effort","Cannot present data graphically"], a:2},
+  {q:"A student collects numerical data on social media usage but struggles to explain WHY teenagers spend so much time online. This shows that quantitative research is:", c:["Too expensive","Too simplistic for explaining whys and hows","Unable to use statistics","Limited to small samples"], a:1},
+  {q:"A hospital administrator needs to analyze patient recovery data using complex statistical software but has no training in statistics. This illustrates which weakness?", c:["Large sample size issues","Requires statistical expertise","Cannot test hypotheses","Data cannot be tabulated"], a:1},
+  {q:"A city planner surveys 50,000 residents and presents the results in bar graphs and pie charts for easy understanding. This demonstrates which strength?", c:["Large-scale research","Statistical methods","Graphical presentation","Generalizability"], a:2},
+  {q:"A manufacturing company tests a new machine on 1,000 products and uses statistical software to analyze defect rates. This shows which strength?", c:["Data can be presented in tables","Large-scale research is possible","Statistical methods assist analysis","All of the above"], a:3},
+  {q:"A researcher finds that reducing complex human emotions to numerical scores on a 1-10 scale loses important details about individual experiences. This is a weakness because:", c:["It is too expensive","It makes research too simplistic","It requires a large sample","It cannot be replicated"], a:1},
+  {q:"A school district easily administers standardized tests to 20,000 students using scantrons and online forms. This demonstrates which strength?", c:["Statistical analysis","Large-scale research can be undertaken","Graphical presentation","Objectivity"], a:1},
+  {q:"A biologist uses ANOVA and regression analysis to determine which factors significantly affect crop yield. This demonstrates which strength?", c:["Large-scale research","Statistical methods assist analysis","Graphical presentation","Replicability"], a:1},
+  {q:"A startup company cannot afford to survey thousands of customers, so they only interview 50 people. Their results may not represent the whole market. This illustrates:", c:["The need for statistical experts","The challenge of large sample sizes","The inability to use graphs","The lack of objectivity"], a:1},
+  {q:"A researcher creates colorful charts and tables from survey data to present findings to the city council. This demonstrates which strength?", c:["Statistical methods","Large-scale research","Graphical or tabular presentation","Generalizability"], a:2},
+
+  {u:"Unit II · Identifying a Research Problem", q:"After reading ten studies about online learning, Ana notices that none of them examined the effects on students with poor internet access. What has Ana identified?", c:["A research title","A research gap","A dependent variable","A hypothesis"], a:1},
+  {q:"Mark is interested in studying mental health among college students. His teacher advises him to first list topics he is passionate about and narrow them down. What step is this?", c:["Making a matrix","Brainstorming for ideas","Formulating a working title","Reading literature"], a:1},
+  {q:"Jenny reads several journal articles about plastic pollution and notices that most studies focus on oceans, while rivers are rarely studied. She decides to research river pollution. What guided her decision?", c:["A research gap","A research title","A dependent variable","A sample size"], a:0},
+  {q:"Before finalizing his topic on renewable energy, Carlo checks online databases and libraries to see if enough studies exist. Which step is he performing?", c:["Brainstorming","Describing the topic","Reading to check resource availability","Formulating the title"], a:2},
+  {q:"A student finds a study on social media addiction that recommends future researchers examine its effects on academic performance. The student decides to study this. Where did the student find the research gap?", c:["In the abstract","In the recommendations to future researchers","In the title","In the references"], a:1},
+  {q:"Prof. Reyes asks her students to write a one-paragraph summary of their chosen topic to see if it is realistic and researchable. Which step is this?", c:["Brainstorming","Describing the topic briefly","Making a matrix","Formulating the working title"], a:1},
+  {q:"After describing his topic, Leo goes back to the library to see if new studies have been published and if he needs to adjust his variables. Which step is this?", c:["First reading","Read again","Brainstorming","Title formulation"], a:1},
+  {q:"A group of students creates a table listing possible topics, related literature, and identified gaps. Which step are they performing?", c:["Brainstorming","Making a matrix","Describing the topic","Formulating the title"], a:1},
+  {q:"During her literature review, Sara realizes her original topic has been studied too many times, so she shifts to a related but less explored angle. This shows the importance of which step?", c:["Brainstorming only once","Reading again to modify the topic","Skipping the matrix","Avoiding the working title"], a:1},
+  {q:"A student drafts \"The Impact of Online Learning on Academic Performance of Grade 12 Students\" as a temporary guide for his study. What is this called?", c:["Final title","Working title","Research gap","Hypothesis"], a:1},
+
+  {u:"Unit II · Research Topics by Field", q:"A student wants to investigate whether green marketing strategies increase customer loyalty in eco-friendly stores. Under which field does this topic fall?", c:["Accounting","Business and Management","Environmental Science","Health Science"], a:1},
+  {q:"A researcher plans to study how homeschooling affects the social skills of children compared to traditional schooling. This topic belongs to which field?", c:["Social Sciences","Education","Humanities","Health Science"], a:1},
+  {q:"A group of students wants to examine the relationship between marine pollution and fish population decline in coastal areas. Which field is this?", c:["Business and Management","Environmental and Earth Science","Social Sciences","Education"], a:1},
+  {q:"A nursing student wants to research the effects of vaccination hesitancy on community health outcomes. This falls under which field?", c:["Education","Health Science","Social Sciences","Humanities"], a:1},
+  {q:"A student is interested in analyzing how religious influences shape modern Filipino art and film. Which field does this belong to?", c:["Social Sciences","Humanities","Education","Business"], a:1},
+  {q:"A researcher wants to study the relationship between leadership styles and employee productivity in call centers. Which field is this?", c:["Accounting","Business and Management","Environmental Science","Health Science"], a:1},
+  {q:"A student plans to investigate the psychological effects of migration on Filipino overseas workers. This topic is under which field?", c:["Health Science","Social Sciences","Education","Humanities"], a:1},
+  {q:"A group wants to study the effectiveness of forensic accounting in detecting fraud in small businesses. Which field does this belong to?", c:["Business and Management","Accounting","Social Sciences","Education"], a:1},
+  {q:"A researcher wants to explore how indigenous cultures preserve their traditions through folklore and oral stories. Which field is this?", c:["Social Sciences","Humanities","Education","Environmental Science"], a:1},
+  {q:"A student wants to examine the impact of 21st-century learning strategies on student motivation in STEM subjects. This falls under which field?", c:["Business","Education","Health Science","Social Sciences"], a:1},
+
+  {u:"Unit II · Writing a Research Title", q:"A student writes a research title: \"An Experimental Research on the Effects of Classical Music to the Improvement of Memorization Skills of Engineering Students of XYZ University.\" How many words does this title contain?", c:["15 words","17 words","21 words","23 words"], a:2},
+  {q:"A researcher wants to study the effects of social media on the mental health of adolescents. Which of the following is the BEST research title?", c:["Social Media and Mental Health","The Effects of Social Media Usage on the Mental Health of Adolescents","A Study About Social Media","Mental Health Problems Today"], a:1},
+  {q:"Prof. Cruz rejects a student's title because it contains the abbreviation \"FB\" instead of spelling out \"Facebook.\" Which characteristic is the professor enforcing?", c:["Focused and Direct","Formal","Brief but Substantial","Clear"], a:1},
+  {q:"A title reads: \"The Impact of Online Learning on the Academic Performance of Senior High School Students During the Pandemic.\" Which characteristic does this title BEST demonstrate?", c:["Formal","Focused and Direct","Brief but Substantial","Proper Grammar"], a:1},
+  {q:"A student is told that her title is too vague and does not mention the variables or the respondents. Which characteristic is missing?", c:["Formal","Focused and Direct","Clear","Proper Grammar"], a:1},
+  {q:"A researcher is advised to keep the title around 15 essential words. Which characteristic is being emphasized?", c:["Formal","Brief but Substantial","Clear","Focused and Direct"], a:1},
+  {q:"A title uses the phrase \"lol\" and \"vibes\" to describe teenage behavior. Which characteristic is violated?", c:["Focused and Direct","Formal","Clear","Proper Grammar"], a:1},
+  {q:"A librarian recommends a title because even non-experts can understand what the study is about. Which characteristic is praised?", c:["Formal","Clear","Brief but Substantial","Focused and Direct"], a:1},
+  {q:"A student capitalizes every word in the title, including \"of\" and \"the.\" Which rule is broken?", c:["The title is too long","Proper grammar and capitalization","The title is unclear","The title is informal"], a:1},
+  {q:"In the classical music study, the researcher identifies the variables, method, and respondents before drafting the title. Which step is this?", c:["Making a list of keywords","Putting details into segments","Drafting sentences","Formulating the title"], a:1},
+
+  {u:"Unit II · Steps in Writing a Research Title", q:"Before writing a title, Dr. Lim asks her students to break down their study into objectives, variables, methods, and respondents. Which step is this?", c:["Making a list of keywords","Putting details into segments","Drafting sentences","Formulating the title"], a:1},
+  {q:"After segmenting the details, a student writes down: classical music, memorization, experiment, engineering students. Which step is this?", c:["Segmenting details","Making a list of keywords","Drafting sentences","Formulating the title"], a:1},
+  {q:"A student drafts the sentence: \"This study will conduct an experiment to test whether classical music helps engineering students improve memorization skills.\" Which step is this?", c:["Segmenting details","Making keywords","Drafting sentences with keywords","Formulating the final title"], a:2},
+  {q:"A researcher finalizes: \"Effects of Classical Music on the Memorization Skills of Engineering Students in XYZ University.\" Which step is this?", c:["Drafting sentences","Formulating the research title","Making keywords","Segmenting details"], a:1},
+  {q:"A student realizes her title is 35 words long and cuts it down to 16 words while keeping all essential information. Which characteristic is she improving?", c:["Formal","Brief but Substantial","Clear","Focused and Direct"], a:1},
+  {q:"A researcher changes his title from \"A Study on Plants\" to \"The Effects of LED Light Wavelength on the Growth Rate of Lettuce Seedlings.\" What did he improve?", c:["He made it shorter","He made it focused and direct","He made it poetic","He made it longer"], a:1},
+  {q:"A title is revised three times during the writing process. The professor says this is acceptable as long as the title still reflects what?", c:["The researcher\'s name","The main topic of the paper","The number of pages","The publication date"], a:1},
+  {q:"A student writes: \"Business Model Trials\" as a research title. What is the main problem with this title?", c:["It is too long","It is too vague and lacks variables/respondents","It uses informal language","It has grammatical errors"], a:1},
+  {q:"A title reads: \"Parental support and its effects on students\' academic achievement.\" Which improvement would make it more focused and direct?", c:["Add abbreviations","Specify the type of parental support and the level of students","Remove the word \"students\"","Make it longer than 25 words"], a:1},
+  {q:"Harry wants to research the effects of MOBA games on the focus of adolescent students with ADHD. In his title, what should he include?", c:["Only the game name","The variables, respondents, and field of inquiry","His personal opinion","A question mark"], a:1},
+
+  {u:"Unit II · Logic & Argumentation in Research", q:"A researcher argues: \"All successful scientists read journals. Dr. Cruz reads journals. Therefore, Dr. Cruz is a successful scientist.\" What is wrong with this argument?", c:["The conclusion is false because the reasoning is invalid","The premises are true but the conclusion does not necessarily follow","The premises are false","There is no problem"], a:1},
+  {q:"A student concludes: \"I have seen three stray dogs in my neighborhood. Therefore, all neighborhoods have stray dogs.\" What fallacy is this?", c:["Ad Hominem","Bandwagon","Generalization","False Dilemma"], a:2},
+  {q:"A politician says: \"You should vote for me because everyone in this town supports me.\" What fallacy is this?", c:["Ad Hominem","Bandwagon","Generalization","False Dilemma"], a:1},
+  {q:"In a debate, one student says: \"Your argument about climate change is wrong because you failed science class.\" What fallacy is this?", c:["Ad Hominem","Bandwagon","Generalization","False Dilemma"], a:0},
+  {q:"A principal tells teachers: \"Either you support the new grading system, or you do not care about students.\" What fallacy is this?", c:["Ad Hominem","Bandwagon","Generalization","False Dilemma"], a:3},
+  {q:"A researcher uses deductive reasoning: \"All mammals have lungs. Whales are mammals. Therefore, whales have lungs.\" If the premises are true, the conclusion is:", c:["Probable","Certain","Possibly false","Uncertain"], a:1},
+  {q:"A student observes that her three older siblings all became engineers, so she concludes that all eldest children become engineers. This is an example of:", c:["Valid deductive reasoning","Flawed inductive reasoning","Correct logic","A sound argument"], a:1},
+  {q:"In Aristotelian logic, a researcher first defines what \"academic stress\" means. Which level of argumentation is this?", c:["Apprehension","Judgment","Reasoning","Conclusion"], a:0},
+  {q:"The researcher then states: \"Academic stress negatively affects student performance.\" Which level is this?", c:["Apprehension","Judgment","Reasoning","Hypothesis"], a:1},
+  {q:"Finally, the researcher states: \"Therefore, reducing academic stress may improve student performance.\" Which level is this?", c:["Apprehension","Judgment","Reasoning","Observation"], a:2}
+];
+
+const quizEl = document.getElementById('quiz');
+const answers = new Array(DATA.length).fill(null);
+let finished = false;
+
+function render(){
+  quizEl.innerHTML = '';
+  DATA.forEach((item, idx) => {
+    if(item.u){
+      const label = document.createElement('div');
+      label.className = 'unit-label';
+      label.textContent = item.u;
+      quizEl.appendChild(label);
+    }
+    const qDiv = document.createElement('div');
+    qDiv.className = 'q';
+    qDiv.id = 'q'+idx;
+
+    const num = document.createElement('div');
+    num.className = 'q-num';
+    num.textContent = 'Item ' + (idx+1) + ' of ' + DATA.length;
+    qDiv.appendChild(num);
+
+    const qt = document.createElement('div');
+    qt.className = 'q-text';
+    qt.textContent = item.q;
+    qDiv.appendChild(qt);
+
+    const choicesDiv = document.createElement('div');
+    choicesDiv.className = 'choices';
+    const letters = ['A','B','C','D'];
+
+    item.c.forEach((choiceText, cIdx) => {
+      const lbl = document.createElement('label');
+      lbl.className = 'choice';
+      lbl.id = 'q'+idx+'c'+cIdx;
+
+      const input = document.createElement('input');
+      input.type = 'radio';
+      input.name = 'q'+idx;
+      input.value = cIdx;
+      input.addEventListener('change', () => {
+        answers[idx] = cIdx;
+        updateSelectedStyles(idx);
+        updateProgress();
+      });
+
+      const letterSpan = document.createElement('span');
+      letterSpan.className = 'letter';
+      letterSpan.textContent = letters[cIdx] + '.';
+
+      const textSpan = document.createElement('span');
+      textSpan.textContent = choiceText;
+
+      lbl.appendChild(input);
+      lbl.appendChild(letterSpan);
+      lbl.appendChild(textSpan);
+      choicesDiv.appendChild(lbl);
+    });
+
+    qDiv.appendChild(choicesDiv);
+    quizEl.appendChild(qDiv);
+  });
+}
+
+function updateSelectedStyles(idx){
+  const item = DATA[idx];
+  item.c.forEach((_, cIdx) => {
+    const lbl = document.getElementById('q'+idx+'c'+cIdx);
+    lbl.classList.toggle('selected', answers[idx] === cIdx);
+  });
+}
+
+function updateProgress(){
+  const answered = answers.filter(a => a !== null).length;
+  document.getElementById('progressText').textContent = answered + ' / ' + DATA.length + ' answered';
+  document.getElementById('footerCount').textContent = answered + ' of ' + DATA.length + ' answered';
+  document.getElementById('progressFill').style.width = (answered/DATA.length*100) + '%';
+}
+
+function remarkFor(pct){
+  if(pct === 100) return 'Perfect score. Nothing left to review.';
+  if(pct >= 90) return 'Excellent. Review the few you missed.';
+  if(pct >= 75) return 'Passing. Go over the misses below.';
+  if(pct >= 50) return 'Halfway there. Revisit the flagged items.';
+  return 'Needs more review — check every red item below.';
+}
+
+function finishTest(){
+  if(finished) return;
+  const unanswered = answers.filter(a => a === null).length;
+  if(unanswered > 0){
+    const proceed = confirm(unanswered + ' item(s) left unanswered. Finish anyway?');
+    if(!proceed) return;
+  }
+  finished = true;
+
+  let score = 0;
+  DATA.forEach((item, idx) => {
+    const qDiv = document.getElementById('q'+idx);
+    qDiv.classList.add('locked');
+    const isCorrect = answers[idx] === item.a;
+    if(isCorrect) score++;
+
+    const tag = document.createElement('div');
+    tag.className = 'grade-tag ' + (isCorrect ? 'correct' : 'incorrect');
+    tag.textContent = isCorrect ? 'CORRECT' : 'INCORRECT';
+    qDiv.appendChild(tag);
+    qDiv.classList.add(isCorrect ? 'correct' : 'incorrect');
+
+    item.c.forEach((_, cIdx) => {
+      const lbl = document.getElementById('q'+idx+'c'+cIdx);
+      const input = lbl.querySelector('input');
+      input.disabled = true;
+      if(cIdx === item.a) lbl.classList.add('mark-correct');
+      else if(cIdx === answers[idx] && cIdx !== item.a) lbl.classList.add('mark-incorrect');
+    });
+  });
+
+  const pct = Math.round(score/DATA.length*100);
+  document.getElementById('stampScore').textContent = score + ' / ' + DATA.length;
+  document.getElementById('stampPct').textContent = pct + '%';
+  document.getElementById('stampRemark').textContent = remarkFor(pct);
+  document.getElementById('stamp').classList.add('show');
+
+  document.getElementById('finishBtn').style.display = 'none';
+  document.getElementById('retakeBtn').style.display = 'inline-block';
+
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function retakeTest(){
+  finished = false;
+  for(let i=0;i<answers.length;i++) answers[i] = null;
+  document.getElementById('stamp').classList.remove('show');
+  document.getElementById('finishBtn').style.display = 'inline-block';
+  document.getElementById('retakeBtn').style.display = 'none';
+  render();
+  updateProgress();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+document.getElementById('finishBtn').addEventListener('click', finishTest);
+document.getElementById('retakeBtn').addEventListener('click', retakeTest);
+
+render();
+updateProgress();
+</script>
+
+</body>
+</html>
